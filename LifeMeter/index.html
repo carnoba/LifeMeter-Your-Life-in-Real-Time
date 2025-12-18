@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LifeMeter — Your Life in Real Time</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#020617;
+  --card:#0f172a;
+  --accent:#38bdf8;
+  --danger:#ef4444;
+  --text:#e5e7eb;
+}
+*{box-sizing:border-box;font-family:system-ui}
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#020617,#000);
+  color:var(--text);
+}
+header{
+  text-align:center;
+  padding:40px 20px;
+}
+header h1{
+  margin:0;
+  font-size:2.4rem;
+  color:var(--accent);
+}
+header p{
+  opacity:.7;
+}
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:var(--card);
+  border-radius:16px;
+  padding:25px;
+  box-shadow:0 0 40px rgba(0,0,0,.6);
+  margin-bottom:20px;
+}
+label{
+  display:block;
+  margin-top:10px;
+  font-weight:600;
+}
+input,select{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  margin-top:6px;
+}
+button{
+  margin-top:15px;
+  padding:14px;
+  width:100%;
+  border:none;
+  border-radius:12px;
+  font-size:1rem;
+  background:var(--accent);
+  font-weight:700;
+  cursor:pointer;
+}
+button:hover{opacity:.9}
+
+.progress-box{
+  margin-top:20px;
+}
+.progress-bar{
+  height:18px;
+  background:#020617;
+  border-radius:20px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--danger));
+  width:0%;
+  transition:width .5s;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+  margin-top:20px;
+}
+.stat{
+  background:#020617;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+}
+.stat h3{
+  margin:0;
+  color:var(--accent);
+}
+.quote{
+  margin-top:25px;
+  font-style:italic;
+  opacity:.85;
+  text-align:center;
+}
+footer{
+  text-align:center;
+  padding:20px;
+  opacity:.5;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>⏳ LifeMeter</h1>
+  <p>See your life ticking — in real time</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+  <label>Date of Birth</label>
+  <input type="date" id="dob">
+
+  <label>Country (Life Expectancy)</label>
+  <select id="life">
+    <option value="67">Pakistan (~67 years)</option>
+    <option value="72">India (~72 years)</option>
+    <option value="78">USA (~78 years)</option>
+    <option value="82">Japan (~82 years)</option>
+    <option value="75">Global Average (~75 years)</option>
+  </select>
+
+  <button onclick="startLife()">Calculate My Life</button>
+</div>
+
+<div class="card" id="result" style="display:none">
+  <h2>Your Life Progress</h2>
+
+  <div class="progress-box">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress"></div>
+    </div>
+    <p id="percentText"></p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><h3 id="yearsLeft"></h3><p>Years Left</p></div>
+    <div class="stat"><h3 id="daysLeft"></h3><p>Days Left</p></div>
+    <div class="stat"><h3 id="hoursLeft"></h3><p>Hours Left</p></div>
+    <div class="stat"><h3 id="secondsLeft"></h3><p>Seconds Left</p></div>
+  </div>
+
+  <div class="quote" id="quote"></div>
+</div>
+
+</div>
+
+<footer>
+  Built with HTML, CSS & JavaScript — Reality is ticking
+</footer>
+
+<script>
+let timer;
+const quotes=[
+ "Time is the only currency you spend without knowing the balance.",
+ "Your future is created by what you do today, not tomorrow.",
+ "One day, this counter will reach zero.",
+ "Most people exist. Few actually live.",
+ "If not now, then when?"
+];
+
+function startLife(){
+ clearInterval(timer);
+ const dob=new Date(document.getElementById("dob").value);
+ if(!dob) return;
+ const lifeYears=parseInt(document.getElementById("life").value);
+ const death=new Date(dob);
+ death.setFullYear(death.getFullYear()+lifeYears);
+
+ document.getElementById("result").style.display="block";
+
+ timer=setInterval(()=>{
+   const now=new Date();
+   const total=death-dob;
+   const passed=now-dob;
+   const left=death-now;
+
+   const percent=Math.min((passed/total)*100,100);
+   document.getElementById("progress").style.width=percent+"%";
+   document.getElementById("percentText").innerText=
+     percent.toFixed(2)+"% of your life completed";
+
+   document.getElementById("yearsLeft").innerText=
+     Math.max(Math.floor(left/1000/60/60/24/365),0);
+   document.getElementById("daysLeft").innerText=
+     Math.max(Math.floor(left/1000/60/60/24),0);
+   document.getElementById("hoursLeft").innerText=
+     Math.max(Math.floor(left/1000/60/60),0);
+   document.getElementById("secondsLeft").innerText=
+     Math.max(Math.floor(left/1000),0);
+
+   document.getElementById("quote").innerText=
+     quotes[Math.floor(percent/20)] || quotes[quotes.length-1];
+ },1000);
+}
+</script>
+
+</body>
+</html>
